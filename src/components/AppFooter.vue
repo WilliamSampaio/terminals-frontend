@@ -18,7 +18,7 @@
       />
     </a>
 
-    <div
+    <!-- <div
       class="text-caption text-disabled"
       style="position: absolute; right: 16px;"
     >
@@ -32,7 +32,7 @@
       >
         MIT License
       </a>
-    </div>
+    </div> -->
   </v-footer>
 </template>
 

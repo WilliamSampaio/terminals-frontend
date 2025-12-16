@@ -1,7 +1,222 @@
 <template>
-  <HelloWorld />
+
+  <v-system-bar>
+    <v-spacer />
+
+    <v-icon>mdi-square</v-icon>
+
+    <v-icon>mdi-circle</v-icon>
+
+    <v-icon>mdi-triangle</v-icon>
+  </v-system-bar>
+
+  <!-- <v-navigation-drawer rail>
+    <v-avatar class="d-block text-center mx-auto mt-4" color="grey-darken-1" size="36" />
+
+    <v-divider class="mx-3 my-5" />
+
+    <v-avatar
+      v-for="n in 6"
+      :key="n"
+      class="d-block text-center mx-auto mb-9"
+      color="grey-lighten-1"
+      size="28"
+    />
+  </v-navigation-drawer> -->
+
+  <v-navigation-drawer width="244">
+    <!-- <v-sheet height="128" width="100%" /> -->
+
+    <v-list>
+
+      <v-list-item>
+        <v-btn block color="primary" rounded>Add New</v-btn>
+      </v-list-item>
+
+      <v-list-item
+        v-for="connection in connections"
+        :key="connection.id"
+        link
+        :title="`${connection.name}`"
+        @dblclick="connect(connection)"
+      >
+        <v-list-item-subtitle>{{ formatConnection(connection) }}</v-list-item-subtitle>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+
+  <!-- <v-app-bar class="px-3" flat height="72">
+    <v-spacer />
+
+    <v-responsive max-width="156">
+      <v-text-field
+        density="compact"
+        flat
+        hide-details
+        rounded="pill"
+        variant="solo-filled"
+      />
+    </v-responsive>
+  </v-app-bar> -->
+
+  <v-sheet v-if="terminals.length > 0">
+    <v-tabs color="primary">
+      <v-tab v-for="terminal in terminals" :key="terminal.name" :value="terminal.name">
+
+        <template #append>
+          <v-icon>mdi-close</v-icon>
+        </template>
+
+        {{ terminal.name }}
+
+      </v-tab>
+    </v-tabs>
+
+    <v-divider />
+
+    <v-tabs-window v-model="tab">
+      <v-tabs-window-item v-for="terminal in terminals" :key="terminal.name" :value="terminal.name">
+        <v-sheet class="pa-3" color="purple">{{ terminal.terminal }}</v-sheet>
+      </v-tabs-window-item>
+    </v-tabs-window>
+
+    <AppFooter />
+  </v-sheet>
+
+  <v-empty-state
+    v-else
+    headline="Welcome,"
+    icon="$vuetify"
+    title="What would you like to do today?"
+  >
+    <v-container>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-card
+            href="https://vuetifyjs.com/introduction/why-vuetify/#feature-guides"
+            prepend-icon="$vuetify"
+            target="_blank"
+            text="Start with our dedicated feature guides"
+            title="Learn Vuetify"
+          />
+        </v-col>
+
+        <v-col cols="12" md="6">
+          <v-card
+            href="https://play.vuetifyjs.com"
+            prepend-icon="$vuetify-play"
+            target="_blank"
+            text="Test Vuetify out in our playground"
+            title="Create a Playground"
+          />
+        </v-col>
+
+        <v-col cols="12" md="6">
+          <v-card
+            href="https://bin.vuetifyjs.com"
+            prepend-icon="mdi-delete"
+            target="_blank"
+            text="Create a new bin to store your code"
+            title="Create a Bin"
+          />
+        </v-col>
+
+        <v-col cols="12" md="6">
+          <v-card
+            href="https://issues.vuetifyjs.com"
+            prepend-icon="$warning"
+            target="_blank"
+            text="File a bug report for Vuetify"
+            title="Report a Bug"
+          />
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-empty-state>
+
+  <v-navigation-drawer location="right">
+    <v-list>
+      <v-list-item v-for="command in commandsHistory" :key="command.id">
+
+        <v-alert density="compact" style="font-family: monospace;">
+
+          <template #prepend>
+            <v-icon
+              v-if="command.favorite"
+              color="yellow darken-2"
+              size="16"
+            >
+              mdi-star
+            </v-icon>
+            <v-icon
+              v-else
+              color="grey lighten-1"
+              size="16"
+            >
+              mdi-star
+            </v-icon>
+          </template>
+
+          <template #append>
+            <v-icon color="success" size="16">mdi-open-in-new</v-icon>
+          </template>
+
+          <span class="text-caption text-disabled">
+            {{ new Date(command.timestamp).toLocaleString() }}
+          </span>
+
+          {{ command.command }}
+        </v-alert>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+
 </template>
 
 <script setup>
-  //
+  import { ref } from 'vue'
+
+  const connections = ref([
+    {
+      id: 1,
+      name: 'cliente_a',
+      info: {
+        ip: '127.0.0.1', port: '22', user: 'usuario',
+      },
+    },
+    {
+      id: 2,
+      name: 'cliente_b',
+      info: {
+        ip: '192.168.0.99', port: '2022', user: 'admin',
+      },
+    },
+  ])
+
+  const commandsHistory = ref([
+    { id: 1, command: 'ls -la', timestamp: '2024-06-01T12:00:00Z', terminalId: 1, favorite: false },
+    { id: 2, command: 'git status', timestamp: '2024-06-01T12:05:00Z', terminalId: 1, favorite: true },
+    { id: 3, command: 'docker ps', timestamp: '2024-06-01T12:10:00Z', terminalId: 2, favorite: false },
+  ])
+
+  const tab = ref(null)
+
+  const terminals = ref([])
+
+  function formatConnection (connection) {
+    return `${connection.info.user}@${connection.info.ip}:${connection.info.port}`
+  }
+
+  function connect (connection) {
+    const terminalName = `${connection.name} (${connection.info.ip})`
+
+    terminals.value.push({
+      name: terminalName,
+      terminal: `Connected to ${formatConnection(connection)}`,
+    })
+
+    tab.value = terminalName
+  }
+
+  onMounted(() => {})
 </script>
