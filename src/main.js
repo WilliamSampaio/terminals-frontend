@@ -1,8 +1,5 @@
-/**
- * main.js
- *
- * Bootstraps Vuetify and other plugins then mounts the App`
- */
+// Composables
+import { createApp } from 'vue'
 
 // Plugins
 import { registerPlugins } from '@/plugins'
@@ -10,14 +7,26 @@ import { registerPlugins } from '@/plugins'
 // Components
 import App from './App.vue'
 
-// Composables
-import { createApp } from 'vue'
-
 // Styles
 import 'unfonts.css'
 
-const app = createApp(App)
+async function initApp () {
+  const response = await fetch('/config.json')
+  const config = await response.json()
 
-registerPlugins(app)
+  window.appConfig = config
 
-app.mount('#app')
+  const app = createApp(App)
+
+  // 2. Torna a config disponível via Provide (para componentes)
+  app.provide('config', config)
+
+  // 3. Opcional: Torna disponível globalmente via window (para arquivos JS puros)
+  window.appConfig = config
+
+  registerPlugins(app)
+
+  app.mount('#app')
+}
+
+initApp()

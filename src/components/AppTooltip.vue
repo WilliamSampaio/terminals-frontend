@@ -5,7 +5,7 @@
     :location="location"
     :open-delay="delay"
     :open-on-click="true"
-    :open-on-hover="false"
+    :open-on-hover="openOnHover"
     :text="text"
   >
     <template #activator="{ props: tooltipProps }">
@@ -29,6 +29,7 @@
     delay: { type: [String, Number], default: 200 },
     // Tempo em milissegundos para o tooltip sumir sozinho
     duration: { type: Number, default: 1500 },
+    openOnHover: { type: Boolean, default: false },
   })
 
   const tooltipVisible = ref(false)

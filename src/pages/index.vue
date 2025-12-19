@@ -1,14 +1,6 @@
 <template>
 
-  <v-system-bar>
-    <v-spacer />
-
-    <v-icon>mdi-square</v-icon>
-
-    <v-icon>mdi-circle</v-icon>
-
-    <v-icon>mdi-triangle</v-icon>
-  </v-system-bar>
+  <AppSystemBar />
 
   <!-- <v-navigation-drawer rail>
     <v-avatar class="d-block text-center mx-auto mt-4" color="grey-darken-1" size="36" />
