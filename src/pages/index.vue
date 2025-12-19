@@ -33,15 +33,17 @@
         <v-btn block color="primary" rounded>Add New</v-btn>
       </v-list-item>
 
-      <v-list-item
-        v-for="connection in connections"
-        :key="connection.id"
-        link
-        :title="`${connection.name}`"
-        @dblclick="connect(connection)"
-      >
-        <v-list-item-subtitle>{{ formatConnection(connection) }}</v-list-item-subtitle>
-      </v-list-item>
+      <AppTooltip v-for="connection in connections" :key="connection.id" location="bottom" text="Double click to connect">
+        <v-list-item
+          class="user-select-none"
+          link
+          :title="`${connection.name}`"
+          @dblclick="connect(connection)"
+        >
+          <v-list-item-subtitle>{{ formatConnection(connection) }}</v-list-item-subtitle>
+        </v-list-item>
+      </AppTooltip>
+
     </v-list>
   </v-navigation-drawer>
 
@@ -60,23 +62,34 @@
   </v-app-bar> -->
 
   <v-sheet v-if="terminals.length > 0">
-    <v-tabs color="primary">
-      <v-tab v-for="terminal in terminals" :key="terminal.name" :value="terminal.name">
+    <v-tabs v-model="tab" color="primary">
+      <v-tab v-for="t in terminals" :key="t.id" :value="t.id">
+        {{ t.name }}
 
         <template #append>
-          <v-icon>mdi-close</v-icon>
+
+          <AppTooltip location="bottom" text="Double click to close tab">
+
+            <v-icon
+              class="ml-2"
+              size="small"
+              @dblclick.stop="closeTab(t.id)"
+            >
+              mdi-close
+            </v-icon>
+
+          </AppTooltip>
         </template>
-
-        {{ terminal.name }}
-
       </v-tab>
     </v-tabs>
 
     <v-divider />
 
     <v-tabs-window v-model="tab">
-      <v-tabs-window-item v-for="terminal in terminals" :key="terminal.name" :value="terminal.name">
-        <v-sheet class="pa-3" color="purple">{{ terminal.terminal }}</v-sheet>
+      <v-tabs-window-item v-for="t in terminals" :key="t.id" :value="t.id">
+        <v-sheet class="pa-3" color="purple">
+          {{ t.terminal }}
+        </v-sheet>
       </v-tabs-window-item>
     </v-tabs-window>
 
@@ -200,7 +213,6 @@
   ])
 
   const tab = ref(null)
-
   const terminals = ref([])
 
   function formatConnection (connection) {
@@ -208,15 +220,35 @@
   }
 
   function connect (connection) {
+    const newId = Date.now()
     const terminalName = `${connection.name} (${connection.info.ip})`
 
     terminals.value.push({
+      id: newId,
       name: terminalName,
       terminal: `Connected to ${formatConnection(connection)}`,
     })
 
-    tab.value = terminalName
+    tab.value = newId
+  }
+
+  function closeTab (id) {
+    terminals.value = terminals.value.filter(t => t.id !== id)
+
+    if (tab.value === id) {
+      tab.value = terminals.value.length > 0 ? terminals.value.at(-1).id : null
+    }
   }
 
   onMounted(() => {})
 </script>
+
+<style scoped>
+/* Impede a seleção de texto especificamente nos itens de lista desta página */
+:deep(.v-list-item) {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE10+ */
+}
+</style>
