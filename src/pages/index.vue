@@ -53,6 +53,43 @@
     </v-responsive>
   </v-app-bar> -->
 
+  <v-navigation-drawer location="right">
+    <v-list>
+      <v-list-item v-for="command in commandsHistory" :key="command.id">
+
+        <v-alert density="compact" style="font-family: monospace;">
+
+          <template #prepend>
+            <v-icon
+              v-if="command.favorite"
+              color="yellow darken-2"
+              size="16"
+            >
+              mdi-star
+            </v-icon>
+            <v-icon
+              v-else
+              color="grey lighten-1"
+              size="16"
+            >
+              mdi-star
+            </v-icon>
+          </template>
+
+          <template #append>
+            <v-icon color="success" size="16">mdi-open-in-new</v-icon>
+          </template>
+
+          <span class="text-caption text-disabled">
+            {{ new Date(command.timestamp).toLocaleString() }}
+          </span>
+
+          {{ command.command }}
+        </v-alert>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+
   <v-sheet v-if="terminals.length > 0">
     <v-tabs v-model="tab" color="primary">
       <v-tab v-for="t in terminals" :key="t.id" :value="t.id">
@@ -138,43 +175,6 @@
       </v-row>
     </v-container>
   </v-empty-state>
-
-  <v-navigation-drawer location="right">
-    <v-list>
-      <v-list-item v-for="command in commandsHistory" :key="command.id">
-
-        <v-alert density="compact" style="font-family: monospace;">
-
-          <template #prepend>
-            <v-icon
-              v-if="command.favorite"
-              color="yellow darken-2"
-              size="16"
-            >
-              mdi-star
-            </v-icon>
-            <v-icon
-              v-else
-              color="grey lighten-1"
-              size="16"
-            >
-              mdi-star
-            </v-icon>
-          </template>
-
-          <template #append>
-            <v-icon color="success" size="16">mdi-open-in-new</v-icon>
-          </template>
-
-          <span class="text-caption text-disabled">
-            {{ new Date(command.timestamp).toLocaleString() }}
-          </span>
-
-          {{ command.command }}
-        </v-alert>
-      </v-list-item>
-    </v-list>
-  </v-navigation-drawer>
 
 </template>
 

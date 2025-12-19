@@ -14,7 +14,7 @@
     >
       <v-icon
         :icon="item.icon"
-        :size="item.icon === '$vuetify' ? 24 : 16"
+        :size="16"
       />
     </a>
 
@@ -38,11 +38,6 @@
 
 <script setup>
   const items = [
-    {
-      title: 'Vuetify Documentation',
-      icon: `$vuetify`,
-      href: 'https://vuetifyjs.com/',
-    },
     {
       title: 'Vuetify Support',
       icon: 'mdi-shield-star-outline',
