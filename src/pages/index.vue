@@ -19,22 +19,87 @@
   <v-navigation-drawer width="244">
     <!-- <v-sheet height="128" width="100%" /> -->
 
-    <v-list>
+    <v-list v-model:opened="open">
 
-      <v-list-item>
-        <v-btn block color="primary" rounded>Add New</v-btn>
+      <v-list-item density="compact">
+
+        <v-text-field clearable color="primary" label="Search" variant="underlined">
+
+          <template #append>
+            <v-btn color="primary" density="compact" icon="mdi-plus" />
+          </template>
+
+        </v-text-field>
+
       </v-list-item>
 
-      <AppTooltip v-for="connection in connections" :key="connection.id" location="bottom" text="Double click to connect">
-        <v-list-item
-          class="user-select-none"
-          link
-          :title="`${connection.name}`"
-          @dblclick="connect(connection)"
+      <v-divider />
+
+      <v-list-group fluid value="ssh">
+
+        <template #activator="{ props }">
+          <v-list-item v-bind="props" density="compact" prepend-icon="mdi-console">
+            <span class="text-caption">SSH Connections</span>
+          </v-list-item>
+        </template>
+
+        <AppTooltip
+          v-for="connection in connections"
+          :key="connection.id"
+          location="bottom"
+          text="Double click to connect"
         >
-          <v-list-item-subtitle>{{ formatConnection(connection) }}</v-list-item-subtitle>
-        </v-list-item>
-      </AppTooltip>
+
+          <v-list-item class="user-select-none" density="compact" link @dblclick="connect(connection)">
+            <v-list-item-title class="text-caption">{{ connection.name }}</v-list-item-title>
+            <v-list-item-subtitle class="text-caption">{{ formatConnection(connection) }}</v-list-item-subtitle>
+          </v-list-item>
+
+        </AppTooltip>
+
+      </v-list-group>
+
+      <v-divider />
+
+      <v-list-group fluid value="shell">
+
+        <template #activator="{ props }">
+          <v-list-item v-bind="props" density="compact" prepend-icon="mdi-bash">
+            <span class="text-caption">Shells</span>
+          </v-list-item>
+        </template>
+
+        <AppTooltip v-for="shell in Shells" :key="shell.id" location="bottom" text="Double click to connect">
+
+          <v-list-item class="user-select-none" density="compact" link @dblclick="() => { }">
+            <v-list-item-title class="text-caption">{{ shell.name }}</v-list-item-title>
+            <v-list-item-subtitle class="text-caption">{{ shell.path }}</v-list-item-subtitle>
+          </v-list-item>
+
+        </AppTooltip>
+
+      </v-list-group>
+
+      <v-divider />
+
+      <v-list-group fluid value="docker">
+
+        <template #activator="{ props }">
+          <v-list-item v-bind="props" density="compact" prepend-icon="mdi-docker">
+            <span class="text-caption">Containers</span>
+          </v-list-item>
+        </template>
+
+        <AppTooltip v-for="shell in Shells" :key="shell.id" location="bottom" text="Double click to connect">
+
+          <v-list-item class="user-select-none" density="compact" link @dblclick="() => { }">
+            <v-list-item-title class="text-caption">{{ shell.name }}</v-list-item-title>
+            <v-list-item-subtitle class="text-caption">{{ shell.path }}</v-list-item-subtitle>
+          </v-list-item>
+
+        </AppTooltip>
+
+      </v-list-group>
 
     </v-list>
   </v-navigation-drawer>
@@ -60,18 +125,10 @@
         <v-alert density="compact" style="font-family: monospace;">
 
           <template #prepend>
-            <v-icon
-              v-if="command.favorite"
-              color="yellow darken-2"
-              size="16"
-            >
+            <v-icon v-if="command.favorite" color="yellow darken-2" size="16">
               mdi-star
             </v-icon>
-            <v-icon
-              v-else
-              color="grey lighten-1"
-              size="16"
-            >
+            <v-icon v-else color="grey lighten-1" size="16">
               mdi-star
             </v-icon>
           </template>
@@ -99,11 +156,7 @@
 
           <AppTooltip location="bottom" text="Double click to close tab">
 
-            <v-icon
-              class="ml-2"
-              size="small"
-              @dblclick.stop="closeTab(t.id)"
-            >
+            <v-icon class="ml-2" size="small" @dblclick.stop="closeTab(t.id)">
               mdi-close
             </v-icon>
 
@@ -125,12 +178,7 @@
     <AppFooter />
   </v-sheet>
 
-  <v-empty-state
-    v-else
-    headline="Welcome,"
-    icon="$vuetify"
-    title="What would you like to do today?"
-  >
+  <v-empty-state v-else headline="Welcome," icon="$vuetify" title="What would you like to do today?">
     <v-container>
       <v-row>
         <v-col cols="12" md="6">
@@ -181,6 +229,8 @@
 <script setup>
   import { ref } from 'vue'
 
+  const open = ref(['ssh'])
+
   const connections = ref([
     {
       id: 1,
@@ -195,6 +245,24 @@
       info: {
         ip: '192.168.0.99', port: '2022', user: 'admin',
       },
+    },
+  ])
+
+  const Shells = ref([
+    {
+      id: 1,
+      name: 'Bash',
+      path: '/bin/bash',
+    },
+    {
+      id: 2,
+      name: 'Zshell',
+      path: '/bin/zsh',
+    },
+    {
+      id: 3,
+      name: 'SH',
+      path: '/bin/sh',
     },
   ])
 
@@ -239,8 +307,11 @@
 /* Impede a seleção de texto especificamente nos itens de lista desta página */
 :deep(.v-list-item) {
   user-select: none;
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE10+ */
+  -webkit-user-select: none;
+  /* Safari */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE10+ */
 }
 </style>
