@@ -16,7 +16,7 @@
     />
   </v-navigation-drawer> -->
 
-  <v-navigation-drawer width="244">
+  <v-navigation-drawer width="300">
     <!-- <v-sheet height="128" width="100%" /> -->
 
     <v-list v-model:opened="open">
@@ -118,28 +118,17 @@
     </v-responsive>
   </v-app-bar> -->
 
-  <v-navigation-drawer location="right">
+  <v-navigation-drawer location="right" width="300">
     <v-list>
       <v-list-item v-for="command in commandsHistory" :key="command.id">
 
-        <v-alert density="compact" style="font-family: monospace;">
-
-          <template #prepend>
-            <v-icon v-if="command.favorite" color="yellow darken-2" size="16">
-              mdi-star
-            </v-icon>
-            <v-icon v-else color="grey lighten-1" size="16">
-              mdi-star
-            </v-icon>
-          </template>
-
-          <template #append>
-            <v-icon color="success" size="16">mdi-open-in-new</v-icon>
-          </template>
+        <v-alert class="pa-2" density="compact" style="font-family: monospace;">
 
           <span class="text-caption text-disabled">
             {{ new Date(command.timestamp).toLocaleString() }}
           </span>
+
+          <br>
 
           {{ command.command }}
         </v-alert>
